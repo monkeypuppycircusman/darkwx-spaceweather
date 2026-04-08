@@ -1,0 +1,414 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Creepster&display=swap');
+
+  .hw {
+    background: #0d0008;
+    padding: 1.5rem;
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+  }
+
+  .hw::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(180,0,255,0.025) 3px, rgba(180,0,255,0.025) 4px);
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .hw::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.75) 100%);
+    pointer-events: none;
+    z-index: 21;
+  }
+
+  .scan {
+    position: absolute;
+    left: 0; right: 0; height: 3px;
+    background: linear-gradient(to right, transparent, rgba(200,80,255,0.12), transparent);
+    animation: scandown 10s linear infinite;
+    pointer-events: none;
+    z-index: 19;
+  }
+  @keyframes scandown { 0%{top:0} 100%{top:100%} }
+
+  .pu  { color: #cc44ff; text-shadow: 0 0 8px #cc44ff, 0 0 16px rgba(180,0,255,0.4); }
+  .or  { color: #ff6600; text-shadow: 0 0 8px #ff6600, 0 0 14px rgba(255,80,0,0.4); }
+  .gr  { color: #44ff88; text-shadow: 0 0 7px #44ff88; }
+  .dim { color: #661a88; }
+  .wh  { color: #ddc8ff; text-shadow: 0 0 5px #cc44ff; }
+  .re  { color: #ff2222; text-shadow: 0 0 8px #ff0000; }
+  .am  { color: #ffaa00; text-shadow: 0 0 6px #ffaa00; }
+  .blk { animation: blinkk 1.1s step-end infinite; }
+  @keyframes blinkk { 50%{opacity:0} }
+
+  .hdr {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1px solid #4a0066;
+    padding-bottom: 0.5rem; margin-bottom: 1rem;
+  }
+  .ttl { font-family: 'Creepster', cursive; font-size: 26px; letter-spacing: 4px; }
+  .sub { font-size: 11px; letter-spacing: 2px; margin-top: 2px; }
+
+  .g2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1rem; margin-bottom: 1rem; }
+  .g3 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); gap: 0.75rem; margin-bottom: 1rem; }
+
+  .pnl {
+    border: 1px solid #4a0066;
+    padding: 0.6rem 0.75rem;
+    position: relative;
+    background: rgba(30,0,40,0.6);
+  }
+  .plbl {
+    font-size: 11px; letter-spacing: 2px;
+    position: absolute; top: -7px; left: 8px;
+    background: #0d0008; padding: 0 4px;
+  }
+
+  .bv { font-size: 30px; font-weight: bold; line-height: 1.1; margin: 3px 0; }
+  .un { font-size: 11px; letter-spacing: 1px; }
+
+  .bt { height: 6px; background: #1a002a; border: 1px solid #33004d; margin: 4px 0; position: relative; }
+  .bf { height: 100%; transition: width 1.2s ease; position: relative; }
+  .bf::after { content:''; position:absolute; right:0; top:0; bottom:0; width:2px; background:rgba(255,255,255,0.5); }
+
+  .srow { display:flex; justify-content:space-between; font-size:12px; margin:3px 0; }
+  .div  { border:none; border-top:1px solid #33004d; margin:0.5rem 0; }
+
+  .spk { display:flex; align-items:flex-end; gap:2px; height:26px; margin-top:4px; }
+  .sb  { width:7px; flex-shrink:0; }
+
+  .kpr { display:flex; gap:3px; align-items:flex-end; }
+  .kpb { width:17px; background:#1a002a; border:1px solid #33004d; }
+  .kpl { font-size:10px; text-align:center; display:block; margin-top:2px; }
+
+  .log-wrap { height:88px; overflow:hidden; margin-top:4px; }
+  .ll { font-size:12px; line-height:1.75; }
+  .ll.fresh { color:#cc44ff; text-shadow:0 0 6px #cc44ff; }
+  .ll.old { color:#661a88; }
+
+  .canvas-wrap { position:relative; height:80px; overflow:hidden; }
+  canvas { display:block; }
+
+  .ftr { font-size:11px; color:#3d0055; letter-spacing:1px; border-top:1px solid #2a0040; margin-top:0.75rem; padding-top:0.5rem; display:flex; justify-content:space-between; }
+
+  .spook { font-family:'Creepster',cursive; font-size:13px; }
+</style>
+
+<div class="hw">
+  <div class="scan"></div>
+
+  <div class="hdr">
+    <div>
+      <div class="ttl pu">DARKWX // TERMINUS</div>
+      <div class="sub dim">OCCULT SPACE WEATHER ARRAY · ALL HALLOWS EVE EDITION</div>
+    </div>
+    <div style="text-align:right">
+      <div id="clk" class="or" style="font-size:22px;letter-spacing:2px;"></div>
+      <div class="dim" style="font-size:11px;letter-spacing:2px;">UTC <span class="blk pu">✦</span> LIVE</div>
+    </div>
+  </div>
+
+  <div class="g3">
+
+    <div class="pnl">
+      <span class="plbl dim">SOLAR WIND</span>
+      <div class="un dim">km/s</div>
+      <div class="bv wh" id="ws">487</div>
+      <div class="bt"><div class="bf" id="wb" style="width:48%;background:linear-gradient(to right,#330044,#cc44ff)"></div></div>
+      <div class="un dim" id="wst">ELEVATED · NOMINAL</div>
+      <div class="spk" id="wsp"></div>
+    </div>
+
+    <div class="pnl">
+      <span class="plbl dim">IMF Bz</span>
+      <div class="un dim">nanoTesla</div>
+      <div class="bv re" id="bz">−18.3</div>
+      <div class="bt"><div class="bf" id="bzb" style="width:73%;background:linear-gradient(to right,#330000,#ff2222)"></div></div>
+      <div class="un re blk">SOUTHWARD · ALERT</div>
+      <div class="spk" id="bzsp"></div>
+    </div>
+
+    <div class="pnl">
+      <span class="plbl dim">DENSITY</span>
+      <div class="un dim">protons/cm³</div>
+      <div class="bv am" id="dn">12.4</div>
+      <div class="bt"><div class="bf" id="dnb" style="width:62%;background:linear-gradient(to right,#332200,#ffaa00)"></div></div>
+      <div class="un am">HIGH · WATCHING</div>
+      <div class="spk" id="dnsp"></div>
+    </div>
+
+  </div>
+
+  <div class="g2">
+
+    <div class="pnl">
+      <span class="plbl dim">Kp-INDEX // GEOMAGNETIC</span>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:4px">
+        <div>
+          <div class="un dim">current</div>
+          <div class="bv or" id="kpn" style="font-size:38px">6</div>
+          <div class="un or">G2 MODERATE STORM</div>
+        </div>
+        <div>
+          <div class="kpr" id="kpc"></div>
+          <div style="font-size:10px;color:#3d0055;margin-top:3px;letter-spacing:1px">00 ─────── 24 UTC</div>
+        </div>
+      </div>
+      <div class="div"></div>
+      <div class="srow"><span class="dim">AURORA LATITUDE</span><span class="gr">~50°N</span></div>
+      <div class="srow"><span class="dim">STORM FORECAST</span><span class="or">G2-G3 LIKELY</span></div>
+      <div class="srow"><span class="dim">NEXT PEAK EST.</span><span class="pu">03:40 UTC</span></div>
+    </div>
+
+    <div class="pnl">
+      <span class="plbl dim">SCHUMANN RESONANCE</span>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;margin-bottom:6px">
+        <div>
+          <div class="un dim">fundamental mode</div>
+          <div class="bv gr" id="sr1">7.83</div>
+        </div>
+        <div style="text-align:right">
+          <div class="un dim">amplitude</div>
+          <div style="font-size:20px" class="gr" id="sra">1.4 pT</div>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="srCanvas" width="300" height="70"></canvas>
+      </div>
+      <div class="div"></div>
+      <div class="srow"><span class="dim">MODE 2</span><span class="pu" id="sr2">14.3 Hz</span></div>
+      <div class="srow"><span class="dim">MODE 3</span><span class="pu" id="sr3">20.8 Hz</span></div>
+      <div class="srow"><span class="dim">CAVITY STATUS</span><span class="gr">RESONATING</span></div>
+    </div>
+
+  </div>
+
+  <div class="pnl" style="margin-bottom:1rem">
+    <span class="plbl dim">TRANSMISSION LOG // INCOMING SIGNALS</span>
+    <div class="log-wrap" id="logbox"></div>
+  </div>
+
+  <div class="g3" style="margin-bottom:0">
+
+    <div class="pnl">
+      <span class="plbl dim">X-RAY FLUX</span>
+      <div class="srow" style="margin-top:6px"><span class="dim">CLASS</span><span class="wh">C3.4</span></div>
+      <div class="srow"><span class="dim">FLARE WATCH</span><span class="or">M-CLASS</span></div>
+      <div class="srow"><span class="dim">X-CLASS PROB</span><span class="wh">12%</span></div>
+    </div>
+
+    <div class="pnl">
+      <span class="plbl dim">ACTIVE REGION</span>
+      <div class="srow" style="margin-top:6px"><span class="dim">SUNSPOT</span><span class="or">#3664</span></div>
+      <div class="srow"><span class="dim">AREA</span><span class="or">1240 μHem</span></div>
+      <div class="srow"><span class="dim">CLASS</span><span class="re">βγδ</span></div>
+    </div>
+
+    <div class="pnl">
+      <span class="plbl dim">EARTH RESONANCE</span>
+      <div class="srow" style="margin-top:6px"><span class="dim">ELF BAND</span><span class="gr">3–30 Hz</span></div>
+      <div class="srow"><span class="dim">LIGHTNING/s</span><span class="gr" id="ltg">~45</span></div>
+      <div class="srow"><span class="dim">SR ANOMALY</span><span class="re blk" id="sran">DETECTED</span></div>
+    </div>
+
+  </div>
+
+  <div class="ftr">
+    <span>SRC: ACE/DSCOVR · GOES · HEARTMATH SR ARRAY</span>
+    <span class="spook pu">☽ ALL HALLOWS EVE ☾</span>
+    <span class="blk pu">█</span>
+  </div>
+</div>
+
+<script>
+function pad(n){return String(n).padStart(2,'0');}
+function rnd(a,b){return a+Math.random()*(b-a);}
+
+function updateClock(){
+  var d=new Date();
+  document.getElementById('clk').textContent=pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())+':'+pad(d.getUTCSeconds());
+}
+setInterval(updateClock,1000); updateClock();
+
+var wH=[420,445,462,471,480,487,492,487];
+var bzH=[2,-4,-7,-11,-14,-16,-18,-18.3];
+var dnH=[7,8,9,10,10,12,13,12.4];
+
+function spark(el,data,col){
+  el.innerHTML='';
+  var mx=Math.max(...data.map(Math.abs));
+  data.forEach(function(v){
+    var d=document.createElement('div');
+    d.className='sb';
+    d.style.height=Math.round(Math.abs(v)/mx*24)+'px';
+    d.style.background=col;
+    d.style.opacity=(0.35+Math.abs(v)/mx*0.65).toFixed(2);
+    el.appendChild(d);
+  });
+}
+spark(document.getElementById('wsp'),wH,'#cc44ff');
+spark(document.getElementById('bzsp'),bzH.map(Math.abs),'#ff2222');
+spark(document.getElementById('dnsp'),dnH,'#ffaa00');
+
+var kpD=[2,3,4,4,5,6,6,7];
+var kpC=['#44ff88','#44ff88','#88ff44','#ccff00','#ffaa00','#ff6600','#ff3300','#ff0000'];
+function drawKp(){
+  var el=document.getElementById('kpc'); el.innerHTML='';
+  kpD.forEach(function(v,i){
+    var w=document.createElement('div');
+    w.style.cssText='display:flex;flex-direction:column;align-items:center;';
+    var b=document.createElement('div');
+    b.className='kpb';
+    b.style.height=(v/9*50)+'px';
+    b.style.background=kpC[i];
+    b.style.opacity='0.85';
+    if(i===kpD.length-1) b.style.boxShadow='0 0 7px '+kpC[i];
+    var l=document.createElement('span');
+    l.className='kpl'; l.style.color=kpC[i]; l.textContent=v;
+    w.appendChild(b); w.appendChild(l); el.appendChild(w);
+  });
+}
+drawKp();
+
+var srPhase=0;
+var srAmp=1.4;
+var srFreq=7.83;
+function drawSR(){
+  var cv=document.getElementById('srCanvas');
+  var ctx=cv.getContext('2d');
+  var W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+
+  ctx.strokeStyle='rgba(68,255,136,0.15)';
+  ctx.lineWidth=0.5;
+  for(var g=0;g<H;g+=10){
+    ctx.beginPath(); ctx.moveTo(0,g); ctx.lineTo(W,g); ctx.stroke();
+  }
+
+  ctx.strokeStyle='#44ff88';
+  ctx.shadowColor='#44ff88';
+  ctx.shadowBlur=6;
+  ctx.lineWidth=1.5;
+  ctx.beginPath();
+  for(var x=0;x<W;x++){
+    var t=x/W*4*Math.PI;
+    var y1=Math.sin(t*srFreq/7.83 + srPhase)*18;
+    var y2=Math.sin(t*srFreq/7.83*2 + srPhase*1.3)*7;
+    var y3=Math.sin(t*srFreq/7.83*0.3 + srPhase*0.2)*5;
+    var y=H/2 - y1*srAmp - y2 - y3;
+    if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.shadowBlur=0;
+
+  ctx.strokeStyle='rgba(204,68,255,0.35)';
+  ctx.lineWidth=0.8;
+  ctx.beginPath();
+  for(var x=0;x<W;x++){
+    var t=x/W*4*Math.PI;
+    var y=H/2 - Math.sin(t*2.5+srPhase*0.7)*9 - Math.sin(t*0.8)*4;
+    if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  srPhase+=0.05;
+  requestAnimationFrame(drawSR);
+}
+drawSR();
+
+var logQ=[
+  '[00:03:12] IMF Bz sustained southward — >10 nT for 31 min',
+  '[00:07:44] Kp index crossed 5 — G1 storm commenced',
+  '[00:14:22] Solar wind speed elevated to 487 km/s',
+  '[00:19:05] Kp reached 6 — G2 MODERATE STORM active',
+  '[00:21:33] Aurora alert issued — latitudes ≥50°N',
+  '[00:28:17] Schumann anomaly detected — 8.1 Hz spike',
+  '[00:31:04] AR 3664 produced C3.4 flare at 00:29 UTC',
+  '[00:34:51] ELF cavity disturbance — lightning burst +40%',
+];
+function buildLog(){
+  var el=document.getElementById('logbox'); el.innerHTML='';
+  logQ.slice(-5).forEach(function(m,i){
+    var d=document.createElement('div');
+    d.className='ll '+(i===4?'fresh':'old');
+    d.textContent=m; el.appendChild(d);
+  });
+}
+buildLog();
+
+var evPool=[
+  'Schumann mode 1 drifted to {SR} Hz — anomalous',
+  'ELF burst detected — {LT} lightning strikes/sec',
+  'Solar wind density spike — {D} p/cm³',
+  'Geomagnetic K-estimate updated: {K}',
+  'HF absorption over auroral zone — blackout risk',
+  'SR amplitude elevated — global storm activity',
+  'IMF clock angle: {A}° — favorable for reconnection',
+  'Cosmic ray flux nominal — Forbush decrease ongoing',
+];
+function addLog(){
+  var t=evPool[Math.floor(Math.random()*evPool.length)];
+  var n=new Date();
+  var ts='['+pad(n.getUTCHours())+':'+pad(n.getUTCMinutes())+':'+pad(n.getUTCSeconds())+'] ';
+  var msg=ts+t
+    .replace('{SR}',(7.5+Math.random()*1.2).toFixed(2))
+    .replace('{LT}',Math.round(rnd(30,80)))
+    .replace('{D}',Math.round(rnd(8,28)))
+    .replace('{K}',Math.round(rnd(4,8)))
+    .replace('{A}',Math.round(rnd(140,220)));
+  logQ.push(msg);
+  if(logQ.length>20) logQ.shift();
+  buildLog();
+}
+setInterval(addLog,7500);
+
+function tick(){
+  var ws=parseFloat(document.getElementById('ws').textContent);
+  var nws=Math.max(350,Math.min(750,Math.round(ws+rnd(-9,11))));
+  document.getElementById('ws').textContent=nws;
+  document.getElementById('wb').style.width=Math.round((nws-300)/500*100)+'%';
+  wH.push(nws); if(wH.length>12) wH.shift();
+  spark(document.getElementById('wsp'),wH,'#cc44ff');
+
+  var bz=parseFloat(document.getElementById('bz').textContent);
+  var nbz=+(bz+rnd(-1.8,1.8)).toFixed(1);
+  nbz=Math.max(-35,Math.min(18,nbz));
+  document.getElementById('bz').textContent=(nbz>=0?'+':'')+nbz;
+  document.getElementById('bzb').style.width=Math.round(Math.abs(nbz)/35*100)+'%';
+  bzH.push(nbz); if(bzH.length>12) bzH.shift();
+  spark(document.getElementById('bzsp'),bzH.map(Math.abs),'#ff2222');
+
+  var dn=parseFloat(document.getElementById('dn').textContent);
+  var ndn=+(dn+rnd(-1.2,1.4)).toFixed(1);
+  ndn=Math.max(1,Math.min(30,ndn));
+  document.getElementById('dn').textContent=ndn;
+  document.getElementById('dnb').style.width=Math.round(ndn/30*100)+'%';
+  dnH.push(ndn); if(dnH.length>12) dnH.shift();
+  spark(document.getElementById('dnsp'),dnH,'#ffaa00');
+
+  var nsr=(7.6+Math.random()*0.6).toFixed(2);
+  document.getElementById('sr1').textContent=nsr;
+  document.getElementById('sr2').textContent=(parseFloat(nsr)*1.83).toFixed(1)+' Hz';
+  document.getElementById('sr3').textContent=(parseFloat(nsr)*2.68).toFixed(1)+' Hz';
+  document.getElementById('sra').textContent=(0.8+Math.random()*1.4).toFixed(1)+' pT';
+  srAmp=0.6+Math.random()*1.8;
+  srFreq=parseFloat(nsr);
+
+  document.getElementById('ltg').textContent='~'+Math.round(rnd(30,70));
+
+  var anomalies=['DETECTED','ELEVATED','NOMINAL','DISTURBED'];
+  var ael=document.getElementById('sran');
+  ael.textContent=anomalies[Math.floor(Math.random()*anomalies.length)];
+  ael.style.color=anomalies.indexOf(ael.textContent)===2?'#44ff88':'#ff2222';
+}
+setInterval(tick,3500);
+</script>
